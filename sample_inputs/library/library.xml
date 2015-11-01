@@ -1,0 +1,165 @@
+<!--
+	  
+ Copyright (C) 2015 Mohammad Javad Dousti, Alireza Shafaei, and Massoud Pedram, SPORT lab,
+ University of Southern California. All rights reserved.
+
+ Please refer to the LICENSE file for terms of use.
+
+-->
+<library>
+	<unit>us</unit>
+	<QEC name = "Steane" length = "7">
+		<gate name = "T">
+			<delay>10940</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>100</ancilla_qubit>
+		</gate>
+		<gate name = "Tdag">
+			<delay>10940</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>100</ancilla_qubit>
+		</gate>
+		<gate name = "T_dag">
+			<delay>10940</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>100</ancilla_qubit>
+		</gate>
+		<gate name = "PrepZ">
+			<delay>1</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>
+		<gate name = "MeasZ">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>
+		<gate name = "MeasX">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>
+		<gate name = "MeasY">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>		
+		<gate name = "X">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "Y">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "Z">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "H">
+			<delay>5440</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "S">
+			<delay>5240</delay> <!-- ???? Check later -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "Sdag">
+			<delay>5240</delay> <!-- ???? Check later -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>
+		<gate name = "S_dag">
+			<delay>5240</delay> <!-- ???? Check later -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>28</ancilla_qubit>
+		</gate>	
+		<gate name = "CNOT">
+			<delay>4930</delay>
+			<data_qubit>14</data_qubit>
+			<ancilla_qubit>56</ancilla_qubit>
+		</gate>		
+	</QEC>
+	<QEC name = "Bacon-Shor" length="9">
+		<gate name = "T">
+			<delay>21333</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>309</ancilla_qubit>
+		</gate>
+		<gate name = "Tdag">
+			<delay>21333</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>309</ancilla_qubit>
+		</gate>
+		<gate name = "T_dag">
+			<delay>21333</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>309</ancilla_qubit>
+		</gate>
+		<gate name = "PrepZ">
+			<delay>1</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>
+		<gate name = "MeasZ">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>		
+		<gate name = "MeasX">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>		
+		<gate name = "MeasY">
+			<delay>10</delay>	<!-- ??? -->
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>0</ancilla_qubit>
+		</gate>
+		<gate name = "X">
+			<delay>2987</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>18</ancilla_qubit>
+		</gate>
+		<gate name = "Y">
+			<delay>2987</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>18</ancilla_qubit>
+		</gate>
+		<gate name = "Z">
+			<delay>2987</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>18</ancilla_qubit>
+		</gate>
+		<gate name = "H">
+			<delay>4080</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>18</ancilla_qubit>
+		</gate>
+		<gate name = "S">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>200</ancilla_qubit>
+		</gate>
+		<gate name = "Sdag">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>200</ancilla_qubit>
+		</gate>
+		<gate name = "S_dag">
+			<delay>5240</delay>
+			<data_qubit>7</data_qubit>
+			<ancilla_qubit>200</ancilla_qubit>
+		</gate>
+		<gate name = "CNOT">
+			<delay>3352</delay>
+			<data_qubit>14</data_qubit>
+			<ancilla_qubit>36</ancilla_qubit>
+		</gate>		
+	</QEC>	
+</library>

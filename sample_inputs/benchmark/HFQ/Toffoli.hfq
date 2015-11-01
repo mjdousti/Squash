@@ -1,0 +1,29 @@
+#
+# Copyright (C) 2015 Mohammad Javad Dousti, Alireza Shafaei, and Massoud Pedram, SPORT lab,
+# University of Southern California. All rights reserved.
+#
+# Please refer to the LICENSE file for terms of use.
+#
+module ToffoliImpl ( qbit target , qbit control1 , qbit control2 ) {
+ 	H ( target );
+ 	CNOT ( control2 , target );
+ 	Tdag ( target );
+ 	CNOT ( control1 , target );
+ 	T ( target );
+ 	CNOT ( control2 , target );
+ 	Tdag ( target );
+ 	CNOT ( control1 , target );
+ 	Tdag ( control2 );
+ 	T ( target );
+ 	CNOT ( control1 , control2 );
+ 	H ( target );
+ 	Tdag ( control2 );
+ 	CNOT ( control1 , control2 );
+ 	T ( control1 );
+ 	S ( control2 );
+ }
+
+module main (  ) {
+ 	qbit a[3];
+	ToffoliImpl(a[0],a[1],a[2]);
+}

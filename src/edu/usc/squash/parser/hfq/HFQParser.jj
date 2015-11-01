@@ -1,0 +1,303 @@
+/*
+ *
+ * Copyright (C) 2015 Mohammad Javad Dousti, Alireza Shafaei, and Massoud Pedram, SPORT lab,
+ * University of Southern California. All rights reserved.
+ *
+ * Please refer to the LICENSE file for terms of use.
+ *
+*/
+
+options
+{
+//  IGNORE_CASE = true;
+  IGNORE_CASE = false;
+  JDK_VERSION = "1.5";
+  static = false;
+}
+
+PARSER_BEGIN(HFQParser)
+package edu.usc.squash.parser.hfq;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+
+import edu.usc.squash.dfg.*;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleDirectedGraph;
+import edu.usc.squash.*;
+
+public class HFQParser
+{
+	private DFG dfg;
+	private Module module;
+	private ArrayList<Operand> ancilla;
+	private boolean mainModuleFound=false;
+	private HashMap<String, Module> modules; 
+	private Library library;
+	private boolean firstPass;
+
+	public HashMap<String, Module> parse(Library lib, boolean firstPass, HashMap<String, Module> modules){
+		library = lib;
+		this.firstPass = firstPass;
+		if (!firstPass)
+			this.modules = modules;
+		else{
+	    	this.modules = new HashMap<String, Module>();
+		}
+		try{
+			start();
+		}catch (ParseException e) {
+	      System.err.println(e.getLocalizedMessage());
+	      return null;
+	  	}catch (IOException e) {
+			System.err.println("HFQ file not found!");
+			return null;
+		}
+		if (RuntimeConfig.VERBOSE){
+		 	if (firstPass)
+				System.out.println("HF-QASM is parsed successfully (1st pass).");
+			else
+				System.out.println("HF-QASM is parsed successfully (2nd pass).");
+		}
+		return this.modules;
+	}
+}
+PARSER_END(HFQParser)
+
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+|  <"#" (~["\n","\r"])* ("\n" | "\r" | "\r\n")?>
+|  <"-" (~["\n","\r"])* ("\n" | "\r" | "\r\n")?>
+}
+
+
+//Reserved Words TOKEN
+TOKEN:
+{
+	< FTOP: "X" | "H"| "T_dag" | "Tdag" | "S_dag" | "Sdag" | "CNOT" | "T" | "S" | "Y" | "Z">
+	| < PREPZ: "PrepZ" >
+	| < MEAS: "MeasZ" | "MeasX" | "MeasY">
+	| < DEF:	("qbit"|"qbit*"|"cbit") >
+	| < MODULE: ("module") >
+}
+
+//IDENTIFIER TOKEN
+TOKEN : {
+	<ID: <LETTER>(<LETTER>|<DIGIT>)*>
+	| <ARRAY: "[" (<DIGIT>)+ "]" >
+	|<#LETTER: (["a"-"z","A"-"Z",".","_"])>
+	|<#DIGIT : ["0"-"9"]>
+}
+
+TOKEN : /* Punctuation */
+{
+  < COMMA : "," >
+}
+
+TOKEN :
+{
+  < CONSTANT : (< DIGIT >|"-")+ ("." (<DIGIT>)+)?>
+}
+
+//MAIN UNIT
+	
+void start() throws IOException : {}
+{
+  (MODULE())+
+  {  }
+  <EOF>
+}
+
+void MODULE() : {
+	Token moduleName, qubit, def;
+	ArrayList<Operand> params=new ArrayList<Operand>();
+	Operand op;
+	ancilla = new ArrayList<Operand>();
+}
+{
+	<MODULE> moduleName=<ID>
+	<"(">
+		(
+		  def=<DEF> (qubit=<ID> | qubit=<FTOP>) {
+		    if (def.image.endsWith("*"))
+		    	op =new Operand(qubit.image, true, -1);
+		    else
+		    	op =new Operand(qubit.image, false, -1);
+		    params.add(op);
+		  }
+		((<COMMA>)? def=<DEF>  (qubit=<ID> | qubit=<FTOP>){
+		    if (def.image.endsWith("*"))
+		    	op =new Operand(qubit.image, true, -1);
+		    else
+		    	op =new Operand(qubit.image, false, -1);
+		    params.add(op);
+		})*
+		)?
+	<")"> <"{">  {
+    if (!firstPass){
+   	  	module = modules.get(moduleName.image);
+   	  	module.unsetVisited();
+
+        dfg=new DFG(library);
+        dfg.defineQubits(module.getArguments(), module.getAncilla());
+		dfg.addStart();
+		module.addDFG(dfg);
+	}
+  }
+	(DEF())*
+  {
+	if (firstPass){
+	    if (moduleName.image.compareToIgnoreCase("main")==0){	//Encountering the main module
+			if (mainModuleFound){
+				System.err.println("Multiple main modules are defined.");
+				System.exit(-1);
+			}else if (params.size() >0)	{			  	System.err.println("Main modules cannot accept arguments.");
+				System.exit(-1);
+			}else{
+			    //Unlike other modules, qubits defined at the top of main are actually data qubits not ancilla.
+			    module = new Module(moduleName.image, ancilla, params, -1);
+	      		mainModuleFound = true;		  
+			}
+	    }else{	//Encountering the non-main module		    module = new Module(moduleName.image, params, ancilla, -1);
+		}
+		modules.put(moduleName.image, module);   
+	}else{
+	  	if (moduleName.image.compareToIgnoreCase("main")==0){
+			dfg.setMainDFG();
+		}
+
+	}
+  }
+  BODY()
+  <"}">
+  {	if (!firstPass){
+		dfg.addEnd();
+	}
+  }
+}
+
+void BODY():{}
+{	(
+	  FTOP()|PREPZ()
+	  |LOOKAHEAD(2) MEAS()
+	  |MODULECALL()
+	)*
+}
+
+void DEF() : {Token defType, qubit, array=null;}
+{
+  defType=<DEF> (qubit=<ID> | qubit=<FTOP>) (array=< ARRAY >)? <";">
+  {
+    if (firstPass){
+      	Operand op; 	    if (array!=null){
+ 	   		int arrayLength = Integer.parseInt(array.image.substring(1, array.image.length()-1));
+ 	    	op = new Operand (qubit.image, true, arrayLength);
+	    }else{
+	    	op = new Operand (qubit.image, false, -1);
+	    }
+	    ancilla.add(op);
+	}
+  }
+}
+
+
+
+void FTOP () : {
+	Token cmd, qubit, array=null; ArrayList<String> qubits=new ArrayList<String>();
+}
+{
+	cmd=<FTOP> <"(">
+	qubit=<ID> (array=<ARRAY>)? {
+	  if (array==null) qubits.add(qubit.image);
+	  else qubits.add(qubit.image + array.image);
+	  array = null;
+	}
+	((<COMMA>)? qubit=<ID> (array=<ARRAY>)? {
+	  if (array==null) qubits.add(qubit.image);
+	  else qubits.add(qubit.image + array.image);
+	  array = null;
+	})*
+	<")"> <";">
+  {
+    if (!firstPass)
+   		dfg.addInst(cmd.image, qubits);
+  }
+}
+
+void PREPZ () : {
+	Token cmd, qubit, array = null; ArrayList<String> qubits=new ArrayList<String>();
+}
+{
+	cmd=<PREPZ> <"(">
+	qubit=<ID> (array=<ARRAY>)? 
+	(<COMMA> <CONSTANT>)?
+	<")"> <";">
+  {
+    if (!firstPass){
+      if (array==null)
+	  	qubits.add(qubit.image);
+	  else
+	  	qubits.add(qubit.image + array.image);
+	  dfg.addInst(cmd.image, qubits);
+	}
+  }
+}
+
+void MEAS () : {
+	Token cmd, cbit, qubit, array = null;
+}
+{
+	(cbit=<ID> (<ARRAY>)? <"=">)? cmd=<MEAS> <"(">
+		qubit=<ID> (array = <ARRAY>)? {}
+	<")"> <";">
+  {
+    if (!firstPass){
+    	ArrayList<String> qubits = new ArrayList<String>();
+	
+	    if (array!=null)
+	    	qubits.add (qubit.image + array.image);
+		else
+	    	qubits.add (qubit.image);
+	
+	    dfg.addInst(cmd.image, qubits);
+	}
+  }
+}
+
+void MODULECALL () : {
+	Token moduleName, qubit, array = null;
+	ArrayList<String> qubits=new ArrayList<String>();
+}
+{
+	moduleName=<ID> <"(">
+	(qubit=<ID>| qubit = <FTOP>) (array = <ARRAY>)? {
+	  if (array==null) qubits.add(qubit.image);
+	  else qubits.add(qubit.image + array.image);
+	  array = null;
+	}
+	((<COMMA>)? (qubit=<ID> | qubit = <FTOP>) (array = <ARRAY>)? {
+	  if (array==null) qubits.add(qubit.image);
+	  else qubits.add(qubit.image + array.image);
+	  array = null;
+	})*
+	<")"> <";">
+  {
+    if (firstPass){
+      	Module m = modules.get(moduleName.image);
+ 	    if (m==null){			System.err.println("Module " + moduleName.image + " is missing.");
+			System.exit(-1);		
+	    }
+
+		module.addChildModule(m, qubits);
+	 }else{
+	    dfg.addModule(modules.get(moduleName.image), qubits);
+	 }
+  }
+}
