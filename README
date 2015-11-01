@@ -1,4 +1,4 @@
-***************************************|
+****************************************
 |   _____                       _      |
 |  / ____|                     | |     |
 | | (___   __ _ _   _  __ _ ___| |__   |
@@ -7,7 +7,7 @@
 | |_____/ \__, |\__,_|\__,_|___/_| |_| |
 |            | |                       |
 |            |_|                       |
-***************************************|
+****************************************
 
 Squash v2 divides a given quantum circuit into a number of quantum modules---each module is divided into k parts such that each part will run on one of k available cores. Then it maps the modules to a multi-core reconfigurable quantum processor architecture, called Requp, which supports a hierarchical approach to mapping a quantum algorithm and ancilla sharing. Each core is capable of performing any quantum instruction.
 
