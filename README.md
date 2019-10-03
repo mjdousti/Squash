@@ -1,16 +1,7 @@
 # Squash
 
+## Description
 Squash v2 divides a given quantum circuit into a number of quantum modules--each module is divided into k parts such that each part will run on one of k available cores. Then it maps the modules to a multi-core reconfigurable quantum processor architecture, called Requp, which supports a hierarchical approach to mapping a quantum algorithm and ancilla sharing. Each core is capable of performing any quantum instruction.
-
-## Change Log
-```
-Version |    Change
--------------------------------------------------------------------------------
-1.00    |    Initial release.
-```
-
-## License
-Please refer to the [LICENSE](LICENSE) file.
 
 ## Directories & Files Structure
 ```
@@ -140,9 +131,14 @@ Example runtime result:  less than 5 seconds
 **Note:** We have tested Squash in Debian Linux and Windows 7 and it worked flawlessly.
 
 ## Developers
-* [Mohammad Javad Dousti](<dousti@usc.edu>)
-* [Alireza Shafaei](<shafaeb@usc.edu>)
-* [Massoud Pedram](<pedram@usc.edu>)
+* Mohammad Javad Dousti (<dousti@usc.edu>)
+* Alireza Shafaei (<shafaeb@usc.edu>)
+* Massoud Pedram (<pedram@usc.edu>)
 
 ## Questions or Bugs?
-You may contact [Mohammad Javad Dousti](<dousti@usc.edu>) for any questions you may have or bugs that you find.
+You may contact Mohammad Javad Dousti (<dousti@usc.edu>) for any questions you may have or bugs that you find.
+
+## License
+Please refer to the [LICENSE](LICENSE) file.
+
+
