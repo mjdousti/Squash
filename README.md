@@ -81,7 +81,7 @@ Squash v2: A hierarchical scalable considering ancilla sharing
 Getting the physical resource estimation for the FT-H gate, Ion Trap PMD, and [[7,1,3]] Steane code:
 ```
 $ java -Xss100m -jar Squash.jar -q sample_inputs/benchmark/HFQ/3M_Binary_Welded_Tree_s5.hfq \
-		-l sample_inputs/library/library.xml -t 60 -k 5  -p  500
+       -l sample_inputs/library/library.xml -t 60 -k 5 -p 500
 ```
 
 **Note:** Make sure to use -Xss100m in order to allocate more stack to Squash.
